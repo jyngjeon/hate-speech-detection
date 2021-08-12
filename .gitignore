@@ -134,3 +134,6 @@ dmypy.json
 # 데이터셋
 datasets/
 dictionary-data/
+
+# 연습
+word-embedding/keras_word_embedding_practice.py
