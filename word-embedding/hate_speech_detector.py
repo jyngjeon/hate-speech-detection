@@ -1,26 +1,44 @@
 import os
-from dataset_reader import *
+from data_preprocessor import *
 from tensorflow.keras.layers import Input, Embedding, GlobalAveragePooling1D, Dense
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.losses import CategoricalCrossentropy
-from tensorflow.keras.utils import to_categorical
+import tensorflow as tf
 
 # Warning 끄기
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+# 사용 가능한 GPU 리스트
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+# 하나라도 있으면
+if gpus:
+    try:
+        # 그 중 첫 번째 GPU로 설정하고, 메모리 할당을 늘릴 수 있도록 한다.
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+    except RuntimeError as e:
+        # 프로그램 시작시에 메모리 증가가 설정되어야만 합니다
+        print(e)
+
 # Train Data
 # Raw 데이터 읽기
 dir = "../datasets/Competition_dataset/train.hate.csv"
-data = read_data(dir)
-data = data_frame2np_array(data)
+data = read_data2np_array(dir)
 
 # 라벨 나누기
 x_train, y_train = split_data_into_x_and_y(data)
 
+# Preprocessing
+# kiwi 학습
+dict_dir = '../dictionary-data/custom_dict.txt'
+kiwi = build_kiwi_model(dict_dir)
+
+# 데이터 파싱
+x_train = parsing_data(x_train, kiwi)
+
 # y_train 원핫 벡터 변환
-y_train, train_labels = change_label_2_int(y_train)
-y_train = to_categorical(y_train)
+y_train = to_one_hot(y_train)
 
 # Debug
 # print(f"Raw Data:\n{data}\nInputs:\n{x_train}\nLabel:\n{y_train}\n")
@@ -28,15 +46,17 @@ y_train = to_categorical(y_train)
 # Test Data
 # Raw 데이터 읽기
 dir = "../datasets/Competition_dataset/dev.hate.csv"
-data = read_data(dir)
-data = data_frame2np_array(data)
+data = read_data2np_array(dir)
 
 # 라벨 나누기
 x_test, y_test = split_data_into_x_and_y(data)
 
-# y_test 원핫 벡터 변환
-y_test, test_labels = change_label_2_int(y_test)
-y_test = to_categorical(y_test)
+# Preprocessing
+# 데이터 파싱
+x_test = parsing_data(x_test, kiwi)
+
+# y_train 원핫 벡터 변환
+y_test = to_one_hot(y_test)
 
 # Debug
 # print(train_labels, test_labels)
@@ -49,6 +69,7 @@ vectorize_layer = TextVectorization(
     output_mode='int',
     output_sequence_length=sequence_length
 )
+print(x_train)
 vectorize_layer.adapt(x_train)
 
 # word2vec
