@@ -133,3 +133,4 @@ dmypy.json
 
 # 데이터셋
 datasets/
+dictionary-data/
