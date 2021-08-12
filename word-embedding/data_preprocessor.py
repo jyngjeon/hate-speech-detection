@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from kiwipiepy import Kiwi
+from tensorflow.keras.utils import to_categorical
 
 
 def read_data(dir):
@@ -24,7 +26,11 @@ def data_frame2np_array(dataframe):
     return dataframe.to_numpy()
 
 
-def split_data_into_x_and_y(data_array, x_column = 0, y_column = 1):
+def read_data2np_array(dir):
+    return data_frame2np_array(read_data(dir))
+
+
+def split_data_into_x_and_y(data_array, x_column=0, y_column=1):
     '''
     입력 데이터와 그에 따른 라벨로 나눔
 
@@ -59,6 +65,52 @@ def change_label_2_int(y_train):
         label = label_list[row_idx]
         label_list[row_idx] = labels[label]
     return label_list, labels
+
+
+def conj_data(*data):
+    dataset = [*data]
+    return np.concatenate(dataset)
+
+
+def build_kiwi_model(dict_dir):
+    '''
+    kiwi 모델을 반환합니다.
+
+    :param dict_dir: 딕셔너리 디렉토리
+    :return: kiwi
+    '''
+    kiwi = Kiwi()
+    kiwi.load_user_dictionary(dict_dir)
+    kiwi.prepare()
+    return kiwi
+
+
+def interpret_kiwi_analysis(kiwi_output):
+    '''
+    kiwi의 분석 결과에서 단어들만 뽑아내어, 띄어쓰기로 이어진 문자열을 만듭니다.
+
+    :param kiwi_output: kiwi model의 분석 결과
+    :return: 띄어쓰기로 이어진 문자열
+    '''
+    return ' '.join(map(lambda x: x[0], kiwi_output[0][0]))
+
+
+def parsing_data(data, kiwi):
+    '''
+    구성 된 kiwi로 형태소 분석을 진행합니다.
+
+    :param data: 원본 데이터
+    :param kiwi: kiwi model
+    :return: 형태소 분석이 완료된 데이터
+    '''
+    # 분석 및 결과 np array 출력
+    analysis = [kiwi.analyze(datum) for datum in data]
+    return np.array([*map(lambda x: interpret_kiwi_analysis(x), analysis)])
+
+
+def to_one_hot(data):
+    data, _ = change_label_2_int(data)
+    return to_categorical(data)
 
 
 if __name__ == "__main__":
