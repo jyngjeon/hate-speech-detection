@@ -24,14 +24,16 @@ def data_frame2np_array(dataframe):
     return dataframe.to_numpy()
 
 
-def split_data_into_x_and_y(data_array):
+def split_data_into_x_and_y(data_array, x_column = 0, y_column = 1):
     '''
     입력 데이터와 그에 따른 라벨로 나눔
 
     :param data_array: 데이터 배열 (numpy)
+    :param x_column: x를 가져올 열
+    :param y_column: y를 가져올 열
     :return: x_train, y_train -> 각각이 데이터 배열
     '''
-    x_train, y_train = data_array[:, 0], data_array[:, 1]
+    x_train, y_train = data_array[:, x_column], data_array[:, y_column]
     return x_train, y_train
 
 
