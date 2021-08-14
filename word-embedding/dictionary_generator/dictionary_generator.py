@@ -52,9 +52,9 @@ def dump_dictionary_data(word2tag, dir):
 
 
 # Directories
-dir_bin = "../datasets/YooBeyoungWoo_dataset/hate_speech_binary_dataset.csv"
-dir_top = "../datasets/YooBeyoungWoo_dataset/hate_speech_topic_dataset.csv"
-dir_else = "../datasets/YooBeyoungWoo_dataset/hate_speech_data.csv"
+dir_bin = "../../datasets/YooBeyoungWoo_dataset/hate_speech_binary_dataset.csv"
+dir_top = "../../datasets/YooBeyoungWoo_dataset/hate_speech_topic_dataset.csv"
+dir_else = "../../datasets/YooBeyoungWoo_dataset/hate_speech_data.csv"
 
 # 데이터셋 구성
 dataset = np.concatenate([
@@ -92,5 +92,5 @@ for post in dataset:
             add_word_tag(word2tag, word, tag)
 
 print("dump data")
-dump_dir = "../dictionary-data/custom_dict.txt"
+dump_dir = "../../dictionary-data/custom_dict.txt"
 dump_dictionary_data(word2tag, dump_dir)
