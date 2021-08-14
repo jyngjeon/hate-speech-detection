@@ -137,3 +137,5 @@ dictionary-data/
 
 # 연습
 word-embedding/keras_word_embedding_practice.py
+
+chrome-extension/
