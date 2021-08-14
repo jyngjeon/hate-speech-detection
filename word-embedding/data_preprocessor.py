@@ -3,6 +3,12 @@ import numpy as np
 from kiwipiepy import Kiwi
 from tensorflow.keras.utils import to_categorical
 
+# Constants
+valid_tag_list = [
+    "NNG", "NNP", "VV", "VA", "VCP", "VCN", "SW",
+    "MM", "MAG", "IC", "XPN", "XR", "SN", "UN"
+]
+
 
 def read_data(dir):
     '''
@@ -12,7 +18,7 @@ def read_data(dir):
     :return: 읽은 데이터
     '''
     data = pd.read_csv(dir)
-    data.fillna("")
+    data.dropna()
     return data
 
 
@@ -89,10 +95,11 @@ def interpret_kiwi_analysis(kiwi_output):
     '''
     kiwi의 분석 결과에서 단어들만 뽑아내어, 띄어쓰기로 이어진 문자열을 만듭니다.
 
-    :param kiwi_output: kiwi model의 분석 결과
+    :param kiwi_output: kiwi model의 분석 결과 (tuple의 리스트)
     :return: 띄어쓰기로 이어진 문자열
     '''
-    return ' '.join(map(lambda x: x[0], kiwi_output[0][0]))
+    tag_filter = filter(lambda x: x[1] in valid_tag_list, kiwi_output)
+    return ' '.join(map(lambda x: x[0], tag_filter))
 
 
 def parsing_data(data, kiwi):
@@ -105,7 +112,7 @@ def parsing_data(data, kiwi):
     '''
     # 분석 및 결과 np array 출력
     analysis = [kiwi.analyze(datum) for datum in data]
-    return np.array([*map(lambda x: interpret_kiwi_analysis(x), analysis)])
+    return np.array([*map(lambda x: interpret_kiwi_analysis(x[0][0]), analysis)])
 
 
 def to_one_hot(data):

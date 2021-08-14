@@ -1,4 +1,7 @@
 import os
+
+import keras.backend
+
 from data_preprocessor import *
 from tensorflow.keras.layers import Input, Embedding, GlobalAveragePooling1D, Dense
 from tensorflow.keras.layers import BatchNormalization, Dropout
@@ -78,44 +81,40 @@ y_test = to_one_hot(y_test)
 # Debug
 # print(train_labels, test_labels)
 
-# 텍스트 벡터화
-vectorize_layer = TextVectorization(
+# 텍스트 벡터화 레이어 정의
+vectorize = TextVectorization(
     input_shape=(1,),
     max_tokens=vocab_size,
     output_mode='int',
     output_sequence_length=sequence_length
 )
-vectorize_layer.adapt(x_train)
+vectorize.adapt(x_train)
+
+# 입력 레이어
+inputs = Input(shape=(1,), dtype=tf.string, name="text inputs")
+
+y = vectorize(inputs)
 
 # word2vec
-# y = Embedding(
-#     input_dim=vocab_size,
-#     output_dim=embedding_dim
-# )(vectorize_layer)
-#
-# # Sequential Model -> Functional API
-# y = GlobalAveragePooling1D()(y)
-# y = Dense(
-#     16,
-#     activation='relu'
-# )(y)
-# outputs = Dense(
-#     3,
-#     activation='softmax'
-# )(y)
-#
-# model = Model(inputs=vectorize_layer, outputs=outputs)
-model = Sequential([
-    vectorize_layer,
-    Embedding(vocab_size, embedding_dim, name="embedding"),
-    GlobalAveragePooling1D(),
-    Dropout(dropout_prob),
-    Dense(32, activation='relu'),
-    Dropout(dropout_prob),
-    Dense(16, activation='relu'),
-    Dropout(dropout_prob),
-    Dense(3, activation='softmax')
-])
+y = Embedding(
+    input_dim=vocab_size,
+    output_dim=embedding_dim
+)(y)
+
+# Sequential Model -> Functional API
+y = GlobalAveragePooling1D()(y)
+y = Dropout(dropout_prob)(y)
+y = Dense(
+    16,
+    activation='relu'
+)(y)
+y = Dropout(dropout_prob)(y)
+outputs = Dense(
+    3,
+    activation='softmax'
+)(y)
+
+model = Model(inputs=inputs, outputs=outputs)
 
 # 모델 요약
 model.summary()
