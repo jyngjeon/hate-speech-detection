@@ -40,7 +40,7 @@ dropout_prob = 0.7
 
 # Train Data
 # Raw 데이터 읽기
-dir = "../datasets/Competition_dataset/train.hate.csv"
+dir = "../../datasets/Competition_dataset/train.hate.csv"
 data = read_data2np_array(dir)
 
 # 라벨 나누기
@@ -48,7 +48,7 @@ x_train, y_train = split_data_into_x_and_y(data)
 
 # Preprocessing
 # kiwi 학습
-dict_dir = '../dictionary-data/custom_dict.txt'
+dict_dir = '../../dictionary-data/custom_dict.txt'
 kiwi = build_kiwi_model(dict_dir)
 
 # 데이터 파싱
@@ -62,7 +62,7 @@ y_train = to_one_hot(y_train)
 
 # Test Data
 # Raw 데이터 읽기
-dir = "../datasets/Competition_dataset/dev.hate.csv"
+dir = "../../datasets/Competition_dataset/dev.hate.csv"
 data = read_data2np_array(dir)
 
 # 라벨 나누기
@@ -128,7 +128,7 @@ model.compile(
 )
 
 # 체크포인트를 위한 디렉토리 생성
-save_dir = os.path.join(os.getcwd(), 'saved_models')
+save_dir = os.path.join(os.getcwd(), '../saved-models')
 model_name = f'{model_name}.{epochs:03d}.tf'
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
@@ -155,4 +155,4 @@ model.fit(
     validation_data=(x_test, y_test),
 )
 
-# model.save_weights(f"saved_models/{model_name}", save_format='tf')
+# model.save_weights(f"saved-models/{model_name}", save_format='tf')

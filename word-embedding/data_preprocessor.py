@@ -96,6 +96,7 @@ def interpret_kiwi_analysis(kiwi_output):
     kiwi의 분석 결과에서 단어들만 뽑아내어, 띄어쓰기로 이어진 문자열을 만듭니다.
 
     :param kiwi_output: kiwi model의 분석 결과 (tuple의 리스트)
+    :param do_data_augmentation: 데이터 augmentation 여부
     :return: 띄어쓰기로 이어진 문자열
     '''
     tag_filter = filter(lambda x: x[1] in valid_tag_list, kiwi_output)
@@ -108,11 +109,61 @@ def parsing_data(data, kiwi):
 
     :param data: 원본 데이터
     :param kiwi: kiwi model
+    :param do_data_augmentation: data augmentation 여부
     :return: 형태소 분석이 완료된 데이터
     '''
     # 분석 및 결과 np array 출력
     analysis = [kiwi.analyze(datum) for datum in data]
     return np.array([*map(lambda x: interpret_kiwi_analysis(x[0][0]), analysis)])
+
+
+def data_augmentation(x_data, y_data, size, double_prob):
+    '''
+    문장에서 단어를 하나씩 뺌으로써 데이터량을 늘린다.
+    확률적으로 단어가 2개 빠지기도 한다.
+    문장 길이가 size보다 작을 경우, 그 문장은 증식되지 아니한다.
+
+    :param x_data: 입력 데이터 전체
+    :param y_data: 라벨 데이터 전체
+    :param size: 불릴 데이터량 (배수)
+    :param double_prob: 두 개가 빠질 확률
+    :return:
+    '''
+    augmented_data = np.copy(x_data)
+    augmented_label = np.copy(y_data)
+
+    for x_idx in range(x_data.shape[0]):
+        x = x_data[x_idx].split()
+        y = y_data[x_idx]
+
+        if len(x) <= size:
+            continue
+
+        del_idx = np.random.random_integers(
+            low=0,
+            high=len(x) - 1,
+            size=size
+        )
+        for idx in del_idx:
+            x_tmp = x.copy()
+            del x_tmp[idx]
+
+            if np.random.random(1)[0] < double_prob:
+                del_idx_2 = np.random.randint(
+                    low=0,
+                    high=len(x) - 2,
+                    size=size
+                )[0]
+                del x_tmp[del_idx_2]
+
+            x_tmp = ' '.join(x_tmp)
+            augmented_data = np.concatenate([augmented_data, np.array([x_tmp])])
+            augmented_label = np.concatenate([augmented_label, np.array([y])])
+
+        if x_idx % 100 == 99:
+            print(f"{(x_idx / len(x_data))*100:.3f}% 완료")
+
+    return augmented_data, augmented_label
 
 
 def to_one_hot(data):
