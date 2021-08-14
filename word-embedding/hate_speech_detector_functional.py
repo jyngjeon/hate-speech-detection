@@ -1,40 +1,26 @@
-import os
-
-from data_preprocessor import *
-from tensorflow.keras.layers import Input, Embedding, GlobalAveragePooling1D, Dense
-from tensorflow.keras.layers import BatchNormalization, Dropout
-from tensorflow.keras.layers import GRU, LSTM, SimpleRNN
+from tensorflow.keras.layers import Input, Embedding, Dense
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Conv1D, Activation
-from tensorflow.keras.optimizers import Adam, SGD, RMSprop
+from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.models import Model
 from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.utils import plot_model
-import tensorflow as tf
 
-# Warning 끄기
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-# 사용 가능한 GPU 리스트
-gpus = tf.config.experimental.list_physical_devices('GPU')
-
-# 하나라도 있으면
-if gpus:
-    try:
-        # 그 중 첫 번째 GPU로 설정하고, 메모리 할당을 늘릴 수 있도록 한다.
-        tf.config.experimental.set_memory_growth(gpus[0], True)
-    except RuntimeError as e:
-        # 프로그램 시작시에 메모리 증가가 설정되어야만 합니다
-        print(e)
+from data_preprocessor import *
+from keras_settings import *
+from explanation_and_visualization import *
 
 # Settings
+basic_settings()  # GPU 설정, 경고 문구 수준 설정
+
 # 기본 모델 세팅
 lr = 1e-5
 batch_size = 32
 epochs = 100
-model_name = "stemming-lstm-bn-model"
+model_name = "stemming-cnn-rnn-lstm-bn-model"
 
 # 단어 벡터화를 위한 세팅
 vocab_size = 10000
@@ -53,54 +39,25 @@ simple_rnn_units = 128
 # 드롭아웃 세팅
 dropout_prob = 0.7
 
-# Train Data
-# Raw 데이터 읽기
-dir = "../datasets/Competition_dataset/train.hate.csv"
-data = read_data2np_array(dir)
-
-# 라벨 나누기
-x_train, y_train = split_data_into_x_and_y(data)
-
-# Preprocessing
-# kiwi 학습
+# 데이터 불러오기 및 전처리를 위한 세팅
+train_dir = "../datasets/Competition_dataset/train.hate.csv"
+test_dir = "../datasets/Competition_dataset/dev.hate.csv"
 dict_dir = '../dictionary-data/custom_dict.txt'
 kiwi = build_kiwi_model(dict_dir)
 
-# 데이터 파싱
-x_train = parsing_data(x_train, kiwi)
-
-# y_train 원핫 벡터 변환
-y_train = to_one_hot(y_train)
-
-# 데이터 증식
-x_train, y_train = data_augmentation(
-    x_data=x_train,
-    y_data=y_train,
-    size=5,
-    double_prob=0.3
+# Train Data
+x_train, y_train = get_train_data(
+    data_dir=train_dir,
+    kiwi_model=kiwi,
+    data_augmentation_size=5,
+    data_augmentation_double_prob=0.3
 )
 
-# Debug
-# print(f"Raw Data:\n{data}\nInputs:\n{x_train}\nLabel:\n{y_train}\n")
-print(len(x_train), len(y_train))
-
 # Test Data
-# Raw 데이터 읽기
-dir = "../datasets/Competition_dataset/dev.hate.csv"
-data = read_data2np_array(dir)
-
-# 라벨 나누기
-x_test, y_test = split_data_into_x_and_y(data)
-
-# Preprocessing
-# 데이터 파싱
-x_test = parsing_data(x_test, kiwi)
-
-# y_train 원핫 벡터 변환
-y_test = to_one_hot(y_test)
-
-# Debug
-# print(train_labels, test_labels)
+x_test, y_test = get_test_data(
+    data_dir=test_dir,
+    kiwi_model=kiwi
+)
 
 # 텍스트 벡터화 레이어 정의
 vectorize = TextVectorization(
@@ -123,42 +80,21 @@ y = Embedding(
     output_dim=embedding_dim
 )(y)
 
-# # CNN
-# y = Conv1D(
-#     filters=num_filters,
-#     kernel_size=kernel_size,
-#     strides=1,
-#     padding='same',
-#     kernel_initializer='he_normal',
-#     kernel_regularizer=l2(1e-4)
-# )(y)
-# y = BatchNormalization()(y)
-# y = Activation('relu')(y)
-#
-# y = Conv1D(
-#     filters=num_filters//2,
-#     kernel_size=kernel_size,
-#     strides=1,
-#     padding='same',
-#     kernel_initializer='he_normal',
-#     kernel_regularizer=l2(1e-4)
-# )(y)
-# y = BatchNormalization()(y)
-# y = Activation('relu')(y)
-#
-# RNN
-# y = GRU(
-#     units=gru_units,
-#     return_sequences=True
-# )(y)
-#
-# y = SimpleRNN(units=simple_rnn_units, name="rnn")(y)
-# y = LSTM(
-#     units=lstm_units,
-# )(y)
+# CNN
+y = Conv1D(
+    filters=num_filters,
+    kernel_size=kernel_size,
+    strides=1,
+    padding='same',
+    kernel_initializer='he_normal',
+    kernel_regularizer=l2(1e-4)
+)(y)
+y = BatchNormalization()(y)
+y = Activation('relu')(y)
+y = LSTM(
+    units=lstm_units,
+)(y)
 
-# DNN
-# y = GlobalAveragePooling1D(name="pooling")(y)
 y = BatchNormalization()(y)
 outputs = Dense(
     3,
@@ -168,8 +104,7 @@ outputs = Dense(
 model = Model(inputs=inputs, outputs=outputs)
 
 # 모델 요약
-model.summary()
-plot_model(model, to_file=f"model-structure/{model_name}.png", show_shapes=True)
+summarize_model(model, model_name)
 
 model.compile(
     optimizer=RMSprop(learning_rate=lr),

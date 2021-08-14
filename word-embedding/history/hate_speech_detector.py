@@ -58,7 +58,7 @@ x_train = parsing_data(x_train, kiwi)
 y_train = to_one_hot(y_train)
 
 # Debug
-# print(f"Raw Data:\n{data}\nInputs:\n{x_train}\nLabel:\n{y_train}\n")
+# print(f"Raw Data:\n{data}\nInputs:\n{x_train_raw}\nLabel:\n{y_train}\n")
 
 # Test Data
 # Raw 데이터 읽기
