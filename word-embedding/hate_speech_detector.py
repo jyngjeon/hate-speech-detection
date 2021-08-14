@@ -1,9 +1,12 @@
 import os
 from data_preprocessor import *
 from tensorflow.keras.layers import Input, Embedding, GlobalAveragePooling1D, Dense
+from tensorflow.keras.layers import BatchNormalization, Dropout
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.losses import CategoricalCrossentropy
+from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.utils import plot_model
 import tensorflow as tf
 
 # Warning 끄기
@@ -20,6 +23,20 @@ if gpus:
     except RuntimeError as e:
         # 프로그램 시작시에 메모리 증가가 설정되어야만 합니다
         print(e)
+
+# Settings
+# 기본 모델 세팅
+batch_size = 32
+epochs = 60
+model_name = "stemming-vectorization-dropout-deeper-model"
+
+# 단어 벡터화를 위한 세팅
+vocab_size = 10000
+sequence_length = 100
+embedding_dim = 16
+
+# 드롭아웃 세팅
+dropout_prob = 0.7
 
 # Train Data
 # Raw 데이터 읽기
@@ -62,18 +79,14 @@ y_test = to_one_hot(y_test)
 # print(train_labels, test_labels)
 
 # 텍스트 벡터화
-vocab_size = 10000
-sequence_length = 100
 vectorize_layer = TextVectorization(
     max_tokens=vocab_size,
     output_mode='int',
     output_sequence_length=sequence_length
 )
-print(x_train)
 vectorize_layer.adapt(x_train)
 
 # word2vec
-embedding_dim = 16
 # y = Embedding(
 #     input_dim=vocab_size,
 #     output_dim=embedding_dim
@@ -95,11 +108,17 @@ model = Sequential([
     vectorize_layer,
     Embedding(vocab_size, embedding_dim, name="embedding"),
     GlobalAveragePooling1D(),
+    Dropout(dropout_prob),
+    Dense(32, activation='relu'),
+    Dropout(dropout_prob),
     Dense(16, activation='relu'),
+    Dropout(dropout_prob),
     Dense(3, activation='softmax')
 ])
 
+# 모델 요약
 model.summary()
+plot_model(model, to_file=f"{model_name}.png", show_shapes=True)
 
 model.compile(
     optimizer='adam',
@@ -107,10 +126,32 @@ model.compile(
     metrics=['accuracy']
 )
 
+# 체크포인트를 위한 디렉토리 생성
+save_dir = os.path.join(os.getcwd(), 'saved_models')
+model_name = f'{model_name}.{epochs:03d}.tf'
+if not os.path.isdir(save_dir):
+    os.makedirs(save_dir)
+filepath = os.path.join(save_dir, model_name)
+
+# FIXME: 이후 Functional API로 교체 후, Custom callback 만들 것; 현재 modelcheckpoint가 textvectorization과 호환 안 됨.
+# 모델 체크포인트
+checkpoint = ModelCheckpoint(
+    filepath=filepath,
+    monitor='val_accuracy',
+    verbose=1,
+    save_best_only=True,
+)
+
+callbacks = [checkpoint]
+
+# 최적화
 model.fit(
     x=x_train,
     y=y_train,
-    batch_size=32,
-    epochs=100,
-    validation_data=(x_test, y_test)
+    batch_size=batch_size,
+    shuffle=True,
+    epochs=epochs,
+    validation_data=(x_test, y_test),
 )
+
+model.save_weights(f"saved_models/{model_name}", save_format='tf')
