@@ -153,10 +153,9 @@ y = Embedding(
 # )(y)
 #
 # y = SimpleRNN(units=simple_rnn_units, name="rnn")(y)
-y = LSTM(
-    units=lstm_units,
-    kernel_regularizer=l2(1e-4)
-)(y)
+# y = LSTM(
+#     units=lstm_units,
+# )(y)
 
 # DNN
 # y = GlobalAveragePooling1D(name="pooling")(y)
