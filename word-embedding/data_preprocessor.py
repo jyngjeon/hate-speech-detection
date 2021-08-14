@@ -43,7 +43,7 @@ def split_data_into_x_and_y(data_array, x_column=0, y_column=1):
     :param data_array: 데이터 배열 (numpy)
     :param x_column: x를 가져올 열
     :param y_column: y를 가져올 열
-    :return: x_train, y_train -> 각각이 데이터 배열
+    :return: x_train_raw, y_train -> 각각이 데이터 배열
     '''
     x_train, y_train = data_array[:, x_column], data_array[:, y_column]
     return x_train, y_train
@@ -73,7 +73,7 @@ def change_label_2_int(y_train):
     return label_list, labels
 
 
-def conj_data(*data):
+def concatenate_data(*data):
     dataset = [*data]
     return np.concatenate(dataset)
 
@@ -115,6 +115,10 @@ def parsing_data(data, kiwi):
     # 분석 및 결과 np array 출력
     analysis = [kiwi.analyze(datum) for datum in data]
     return np.array([*map(lambda x: interpret_kiwi_analysis(x[0][0]), analysis)])
+
+
+def parse_data_for_tokenizing(data):
+    return np.array(["[CLS] "+post+"[sep]" for post in data])
 
 
 def data_augmentation(x_data, y_data, size, double_prob):
@@ -161,7 +165,7 @@ def data_augmentation(x_data, y_data, size, double_prob):
             augmented_label = np.concatenate([augmented_label, np.array([y])])
 
         if x_idx % 100 == 99:
-            print(f"{(x_idx / len(x_data))*100:.3f}% 완료")
+            print(f"{(x_idx / len(x_data)) * 100:.3f}% 완료")
 
     return augmented_data, augmented_label
 
@@ -169,6 +173,78 @@ def data_augmentation(x_data, y_data, size, double_prob):
 def to_one_hot(data):
     data, _ = change_label_2_int(data)
     return to_categorical(data)
+
+
+def get_train_data(
+        data_dir, kiwi_model, data_augmentation_size, data_augmentation_double_prob
+):
+    # 데이터 읽기
+    loaded_data = read_data2np_array(data_dir)
+
+    # 라벨 나누기
+    x_train, y_train = split_data_into_x_and_y(loaded_data)
+
+    # Preprocessing
+    # 데이터 파싱
+    x_train = parsing_data(x_train, kiwi_model)
+
+    # 원 핫 인코딩
+    y_train = to_one_hot(y_train)
+
+    # 데이터 증식
+    x_train, y_train = data_augmentation(
+        x_data=x_train,
+        y_data=y_train,
+        size=data_augmentation_size,
+        double_prob=data_augmentation_double_prob
+    )
+    return x_train, y_train
+
+
+# TODO: 과연 이게 필요할까?
+def get_train_data_with_tokenizer(
+    data_dir, kiwi_model, tokenizer, data_augmentation_size, data_augmentation_double_prob
+):
+    # 데이터 읽기
+    loaded_data = read_data2np_array(data_dir)
+
+    # 라벨 나누기
+    x_train, y_train = split_data_into_x_and_y(loaded_data)
+
+    # Preprocessing
+    # 데이터 파싱 및 토크나이즈
+    x_train = parsing_data(x_train, kiwi_model)
+
+    # 원 핫 인코딩
+    y_train = to_one_hot(y_train)
+
+    # 데이터 증식
+    x_train, y_train = data_augmentation(
+        x_data=x_train,
+        y_data=y_train,
+        size=data_augmentation_size,
+        double_prob=data_augmentation_double_prob
+    )
+    return x_train, y_train
+
+
+def get_test_data(
+        data_dir, kiwi_model
+):
+    # 데이터 읽기
+    loaded_data = read_data2np_array(data_dir)
+
+    # 라벨 나누기
+    x_test, y_test = split_data_into_x_and_y(loaded_data)
+
+    # Preprocessing
+    # 데이터 파싱
+    x_test = parsing_data(x_test, kiwi_model)
+
+    # 원 핫 인코딩
+    y_test = to_one_hot(y_test)
+
+    return x_test, y_test
 
 
 if __name__ == "__main__":
