@@ -1,2 +1,2 @@
-model_checkpoint_path: "stemming-vectorization-dropout-deeper-model.060.tf"
-all_model_checkpoint_paths: "stemming-vectorization-dropout-deeper-model.060.tf"
+model_checkpoint_path: "stemming-cnn-rnn-bn-model.100.tf"
+all_model_checkpoint_paths: "stemming-cnn-rnn-bn-model.100.tf"
