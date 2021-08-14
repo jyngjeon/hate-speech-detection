@@ -128,7 +128,7 @@ model.compile(
 )
 
 # 체크포인트를 위한 디렉토리 생성
-save_dir = os.path.join(os.getcwd(), '../saved_models')
+save_dir = os.path.join(os.getcwd(), '../saved-models')
 model_name = f'{model_name}.{epochs:03d}.tf'
 if not os.path.isdir(save_dir):
     os.makedirs(save_dir)
@@ -155,4 +155,4 @@ model.fit(
     validation_data=(x_test, y_test),
 )
 
-# model.save_weights(f"saved_models/{model_name}", save_format='tf')
+# model.save_weights(f"saved-models/{model_name}", save_format='tf')
