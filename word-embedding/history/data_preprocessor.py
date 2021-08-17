@@ -248,7 +248,7 @@ def get_test_data(
 
 
 if __name__ == "__main__":
-    data = read_data("../datasets/Competition_dataset/train.hate.csv")
+    data = read_data("../../datasets/Competition_dataset/train.hate.csv")
     print("데이터 헤드")
     print(data.head)
     print()

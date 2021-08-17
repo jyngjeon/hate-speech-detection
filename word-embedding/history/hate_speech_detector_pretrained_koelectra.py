@@ -28,8 +28,8 @@ tokenizer = ElectraTokenizer.from_pretrained("monologg/koelectra-base-v3-discrim
 
 # Load Data
 # 데이터 불러오기 및 전처리를 위한 세팅
-train_dir = "../datasets/Competition_dataset/train.hate.csv"
-test_dir = "../datasets/Competition_dataset/dev.hate.csv"
+train_dir = "../../datasets/Competition_dataset/train.hate.csv"
+test_dir = "../../datasets/Competition_dataset/dev.hate.csv"
 # dict_dir = '../dictionary-data/custom_dict.txt'
 # kiwi = build_kiwi_model(dict_dir)
 

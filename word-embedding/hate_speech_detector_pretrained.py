@@ -13,13 +13,31 @@ def id2tag(idx):
     return id2tag_dict[idx]
 
 
-test_data = read_data("../datasets/Competition_dataset/dev.hate.csv")
-x_test = test_data["comments"]
-y_test = test_data["label"]
+print(torch.cuda.get_device_name(torch.cuda.current_device()))
 
+# Load Model and Tokenizer
 tokenizer = AutoTokenizer.from_pretrained("monologg/koelectra-base-v3-hate-speech")
 model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-v3-hate-speech")
 
+# Constants
+ROOT_DIR = "../datasets/Competition_dataset"
+TRAIN_DATA = "train.hate.csv"
+TEST_DATA = "dev.hate.csv"
+TRAIN_DIR = ROOT_DIR + TRAIN_DATA
+TEST_DATA = ROOT_DIR + TEST_DATA
+
+# Train Data (Fine Tuning)
+train_data = read_data(TRAIN_DIR)
+x_train = train_data["comments"]
+y_train = train_data["label"]
+
+x_train_encodings = tokenizer(x_train, truncation=True, add_special_tokens=True, return_tensors="pt")
+train_dataset = {key: torch.tensor(val[idx]) for key, val in x_train_encodings.items()}
+
+
+test_data = read_data("../datasets/Competition_dataset/dev.hate.csv")
+x_test = test_data["comments"]
+y_test = test_data["label"]
 
 correct_cnt = 0
 data_cnt = 0
