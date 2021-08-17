@@ -13,4 +13,4 @@ class HateSpeechDataset(Dataset):
         return item
 
     def __len__(self):
-        return len(self.labels)
+        return len(self.labels.T)

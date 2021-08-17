@@ -1,7 +1,7 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoModelForSequenceClassification
+from transformers import Trainer, TrainingArguments
 import torch
-import numpy as np
-from data_preprocessor import read_data
+from data_preprocessing import read_data
 
 
 def id2tag(idx):
@@ -15,41 +15,55 @@ def id2tag(idx):
 
 print(torch.cuda.get_device_name(torch.cuda.current_device()))
 
-# Load Model and Tokenizer
-tokenizer = AutoTokenizer.from_pretrained("monologg/koelectra-base-v3-hate-speech")
-model = AutoModelForSequenceClassification.from_pretrained("monologg/koelectra-base-v3-hate-speech")
-
 # Constants
-ROOT_DIR = "../datasets/Competition_dataset"
+# Directories
+ROOT_DIR = "../datasets/Competition_dataset/"
 TRAIN_DATA = "train.hate.csv"
 TEST_DATA = "dev.hate.csv"
 TRAIN_DIR = ROOT_DIR + TRAIN_DATA
-TEST_DATA = ROOT_DIR + TEST_DATA
+TEST_DIR = ROOT_DIR + TEST_DATA
+OUTPUT_DIR = "./results"
+LOG_DIR = "./logs"
 
-# Train Data (Fine Tuning)
+BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
+
+RESULTS_DIR = "./results/"
+CP_DIR = "checkpoint-9500/"
+TORCH_MODEL = RESULTS_DIR + CP_DIR
+
+# Trainer Parameter
+TRAIN_EPOCHS = 5
+TRAIN_BATCH_SIZE = 4
+EVAL_BATCH_SIZE = 16
+WARMUP_STEPS = 500
+WEIGHT_DECAY = 0.01
+LOGGING_STEPS = 10
+
+# Read Data
 train_data = read_data(TRAIN_DIR)
-x_train = train_data["comments"]
-y_train = train_data["label"]
+test_data = read_data(TEST_DIR)
 
-x_train_encodings = tokenizer(x_train, truncation=True, add_special_tokens=True, return_tensors="pt")
-train_dataset = {key: torch.tensor(val[idx]) for key, val in x_train_encodings.items()}
+torch.cuda.empty_cache()
 
+# Load Model
+model = AutoModelForSequenceClassification.from_pretrained(TORCH_MODEL)
 
-test_data = read_data("../datasets/Competition_dataset/dev.hate.csv")
-x_test = test_data["comments"]
-y_test = test_data["label"]
+training_args = TrainingArguments(
+    output_dir=OUTPUT_DIR,
+    num_train_epochs=TRAIN_EPOCHS,
+    per_device_train_batch_size=TRAIN_BATCH_SIZE,
+    per_device_eval_batch_size=EVAL_BATCH_SIZE,
+    warmup_steps=WARMUP_STEPS,
+    weight_decay=WEIGHT_DECAY,
+    logging_dir=LOG_DIR,
+    logging_steps=LOGGING_STEPS
+)
 
-correct_cnt = 0
-data_cnt = 0
-for test_idx in range(len(x_test)):
-    inputs = tokenizer(x_test[test_idx], return_tensors="pt")
-    labels = torch.tensor([1]).unsqueeze(0)
-    outputs = model(**inputs, labels=labels)
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_data,
+    eval_dataset=test_data
+)
 
-    cls = np.argmax(outputs.logits.detach().numpy())
-    tag = id2tag(cls)
-
-    if tag == y_test[test_idx]:
-        correct_cnt += 1
-    data_cnt += 1
-print(f"정확도: {correct_cnt/data_cnt * 100:.2f}%")
+trainer.train(TORCH_MODEL)
