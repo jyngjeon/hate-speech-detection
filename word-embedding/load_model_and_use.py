@@ -40,8 +40,8 @@ def visualize_matrix(matrix):
 
 # Constants
 # Directories
-ROOT_DIR = "../datasets/Competition_dataset/"
-TEST_DATA = "train.hate.csv"
+ROOT_DIR = "../datasets/Custom_dataset/"
+TEST_DATA = "Surin_train_dataset_na_drop_utf-8.csv"
 TEST_DIR = ROOT_DIR + TEST_DATA
 RESULTS_DIR = "./results/"
 CP_DIR = "checkpoint-9500/"
@@ -51,7 +51,7 @@ BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
 
 torch.cuda.empty_cache()
 
-model = AutoModelForSequenceClassification.from_pretrained(BASE_MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(TORCH_MODEL)
 tokenizer = get_tokenizer()
 
 test_data = pd.read_csv(TEST_DIR)
@@ -76,8 +76,8 @@ for test_idx in range(len(x_test)):
     outputs = model(**inputs, labels=labels)
 
     predict_id = np.argmax(outputs.logits.detach().numpy())
-    real_id = tag2id(y_test[test_idx])
-
+    #  real_id = tag2id(y_test[test_idx])
+    real_id = y_test[test_idx]
     validity_matrix[real_id][predict_id] += 1
 
 print(visualize_matrix(validity_matrix))
