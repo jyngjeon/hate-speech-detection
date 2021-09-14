@@ -17,10 +17,11 @@ print(torch.cuda.get_device_name(torch.cuda.current_device()))
 
 # Constants
 # Directories
+FINE_TUNE_DIR = "../datasets/Mixed_dataset/"
 ROOT_DIR = "../datasets/Competition_dataset/"
 TRAIN_DATA = "train.hate.csv"
 TEST_DATA = "dev.hate.csv"
-TRAIN_DIR = ROOT_DIR + TRAIN_DATA
+TRAIN_DIR = FINE_TUNE_DIR + TRAIN_DATA
 TEST_DIR = ROOT_DIR + TEST_DATA
 OUTPUT_DIR = "./results"
 LOG_DIR = "./logs"
@@ -32,7 +33,7 @@ CP_DIR = "checkpoint-9500/"
 TORCH_MODEL = RESULTS_DIR + CP_DIR
 
 # Trainer Parameter
-TRAIN_EPOCHS = 5
+TRAIN_EPOCHS = 40
 TRAIN_BATCH_SIZE = 4
 EVAL_BATCH_SIZE = 16
 WARMUP_STEPS = 500
