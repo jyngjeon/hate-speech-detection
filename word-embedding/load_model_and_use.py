@@ -40,11 +40,11 @@ def visualize_matrix(matrix):
 
 # Constants
 # Directories
-ROOT_DIR = "../datasets/Custom_dataset/"
-TEST_DATA = "Surin_train_dataset_na_drop_utf-8.csv"
+ROOT_DIR = "../datasets/Competition_dataset/"
+TEST_DATA = "dev.hate.csv"
 TEST_DIR = ROOT_DIR + TEST_DATA
 RESULTS_DIR = "./results/"
-CP_DIR = "checkpoint-9500/"
+CP_DIR = "checkpoint-15000/"
 TORCH_MODEL = RESULTS_DIR + CP_DIR
 
 BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
@@ -76,8 +76,8 @@ for test_idx in range(len(x_test)):
     outputs = model(**inputs, labels=labels)
 
     predict_id = np.argmax(outputs.logits.detach().numpy())
-    #  real_id = tag2id(y_test[test_idx])
-    real_id = y_test[test_idx]
+    real_id = tag2id(y_test[test_idx])
+    # real_id = y_test[test_idx]
     validity_matrix[real_id][predict_id] += 1
 
 print(visualize_matrix(validity_matrix))
