@@ -29,11 +29,11 @@ LOG_DIR = "./logs"
 BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
 
 RESULTS_DIR = "./results/"
-CP_DIR = "checkpoint-9500/"
+CP_DIR = "checkpoint-4500/"
 TORCH_MODEL = RESULTS_DIR + CP_DIR
 
 # Trainer Parameter
-TRAIN_EPOCHS = 40
+TRAIN_EPOCHS = 3
 TRAIN_BATCH_SIZE = 4
 EVAL_BATCH_SIZE = 16
 WARMUP_STEPS = 500

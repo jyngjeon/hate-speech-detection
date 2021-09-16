@@ -44,7 +44,7 @@ ROOT_DIR = "../datasets/Competition_dataset/"
 TEST_DATA = "dev.hate.csv"
 TEST_DIR = ROOT_DIR + TEST_DATA
 RESULTS_DIR = "./results/"
-CP_DIR = "checkpoint-15000/"
+CP_DIR = "checkpoint-4500/"
 TORCH_MODEL = RESULTS_DIR + CP_DIR
 
 BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
