@@ -47,11 +47,13 @@ RESULTS_DIR = "./results/"
 CP_DIR = "checkpoint-4500/"
 TORCH_MODEL = RESULTS_DIR + CP_DIR
 
+FINAL_MODEL = "../result_model/final_model/"
+
 BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
 
 torch.cuda.empty_cache()
 
-model = AutoModelForSequenceClassification.from_pretrained(TORCH_MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(FINAL_MODEL)
 tokenizer = get_tokenizer()
 
 test_data = pd.read_csv(TEST_DIR)
@@ -75,8 +77,19 @@ for test_idx in range(len(x_test)):
     labels = torch.tensor([1]).unsqueeze(0)
     outputs = model(**inputs, labels=labels)
 
-    predict_id = np.argmax(outputs.logits.detach().numpy())
+    predictions = outputs.logits.detach().numpy()
+    sum_exp = np.sum(np.exp(predictions))
+    predictions = np.exp(predictions) / sum_exp
+
+    predict_id = np.argmax(predictions)
+
     real_id = tag2id(y_test[test_idx])
+    if real_id != predict_id:
+        print(f"원문: {x_test[test_idx]}\n" +
+              f"실제: {id2tag(real_id)}, 예측: {id2tag(predict_id)}\n" +
+              f"* 신뢰도(None, Offensive, Hate): " +
+              f"{predictions[0][0] * 100:.2f}%, {predictions[0][1] * 100:.2f}%, {predictions[0][2] * 100:.2f}%\n")
+
     # real_id = y_test[test_idx]
     validity_matrix[real_id][predict_id] += 1
 
