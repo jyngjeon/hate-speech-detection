@@ -11,17 +11,20 @@ ___
 │  README.md
 │
 └─word-embedding
+    |  cli_model_test.py
     │  data_preprocessing.py
     │  hate_speech_dataset.py
     │  hate_speech_detector_pretrained.py
-    │  load_model_and_use.py
+    │  test_model.py
 ```
 
 `word-embedding`는 혐오 표현 판별 모델에 대한 폴더입니다.
 
 `data_preprocessing.py`과 `hate_speech_dataset.py` 파일은 이전 LSTM 모델을 구축할 때 사용한 코드로, 데이터 호출과 전처리를 수행합니다. 
 
-`hate_speech_detector_pretrained.py`은 사전 학습된 모델을 Fine Tuning하며, `load_model_and_use.py`은 Fine Tuning이 진행된 모델의 정확도를 데이터 레이블별로 계산하여 정리합니다. 
+`hate_speech_detector_pretrained.py`은 사전 학습된 모델을 Fine Tuning하며, `test_model.py`은 Fine Tuning이 진행된 모델의 정확도를 데이터 레이블별로 계산하여 정리합니다. 
+
+한편, 테스트 데이터로의 검증은 눈에 잘 보이지 않기 때문에, `cli_model_test.py`를 이용해 직접 문장을 입력하고 결과를 확인할 수 있습니다.
 
 ```
 └─word-embedding
