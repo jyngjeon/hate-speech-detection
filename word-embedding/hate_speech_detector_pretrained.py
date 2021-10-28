@@ -1,7 +1,7 @@
 from transformers import AutoModelForSequenceClassification
 from transformers import Trainer, TrainingArguments
 import torch
-from data_preprocessing import read_data
+from data_preprocessing import *
 
 
 def id2tag(idx):
@@ -23,8 +23,8 @@ TRAIN_DATA = "train.hate.csv"
 TEST_DATA = "dev.hate.csv"
 TRAIN_DIR = FINE_TUNE_DIR + TRAIN_DATA
 TEST_DIR = ROOT_DIR + TEST_DATA
-OUTPUT_DIR = "./results"
-LOG_DIR = "./logs"
+OUTPUT_DIR = "./results_oversample"
+LOG_DIR = "./logs_oversample"
 
 BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
 
@@ -41,13 +41,16 @@ WEIGHT_DECAY = 0.01
 LOGGING_STEPS = 10
 
 # Read Data
-train_data = read_data(TRAIN_DIR)
+train_data = read_data(TRAIN_DIR, True)
 test_data = read_data(TEST_DIR)
+
+# Describe data
+print(len(train_data))
 
 torch.cuda.empty_cache()
 
 # Load Model
-model = AutoModelForSequenceClassification.from_pretrained(TORCH_MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(BASE_MODEL)
 
 training_args = TrainingArguments(
     output_dir=OUTPUT_DIR,
@@ -67,4 +70,4 @@ trainer = Trainer(
     eval_dataset=test_data
 )
 
-trainer.train(TORCH_MODEL)
+trainer.train()
