@@ -2,7 +2,7 @@ import torch
 from transformers import AutoModelForSequenceClassification
 import pandas as pd
 import numpy as np
-from data_preprocessing import get_tokenizer
+from data_preprocessing import *
 
 
 def id2tag(idx):
@@ -44,8 +44,9 @@ ROOT_DIR = "../datasets/Competition_dataset/"
 TEST_DATA = "dev.hate.csv"
 TEST_DIR = ROOT_DIR + TEST_DATA
 RESULTS_DIR = "./results/"
+OVER_SAMPLE_MODEL = "./results_oversample/"
 CP_DIR = "checkpoint-4500/"
-TORCH_MODEL = RESULTS_DIR + CP_DIR
+TORCH_MODEL = OVER_SAMPLE_MODEL + CP_DIR
 
 FINAL_MODEL = "../result_model/final_model/"
 
@@ -53,11 +54,12 @@ BASE_MODEL = "monologg/koelectra-base-v3-hate-speech"
 
 torch.cuda.empty_cache()
 
-model = AutoModelForSequenceClassification.from_pretrained(FINAL_MODEL)
+model = AutoModelForSequenceClassification.from_pretrained(TORCH_MODEL)
 tokenizer = get_tokenizer()
 
 test_data = pd.read_csv(TEST_DIR)
 test_data.dropna()
+
 x_test = test_data["comments"]
 y_test = test_data["label"]
 
