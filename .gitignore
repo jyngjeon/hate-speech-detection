@@ -140,7 +140,10 @@ word-embedding/history/keras_word_embedding_practice.py
 
 # 모델 (용량 문제)
 word-embedding/results/
+word-embedding/results_fine_tuning/
+word-embedding/results_oversample/
 word-embedding/logs/
+word-embedding/logs_oversample/
 result_model/
 
 chrome-extension/
