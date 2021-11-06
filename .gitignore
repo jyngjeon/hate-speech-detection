@@ -145,6 +145,7 @@ word-embedding/results_oversample/
 word-embedding/logs/
 word-embedding/logs_oversample/
 result_model/
+word-embedding/final_model_revised/
 
 # development in progress
 chrome-extension/
