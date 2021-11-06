@@ -146,4 +146,8 @@ word-embedding/logs/
 word-embedding/logs_oversample/
 result_model/
 
+# development in progress
 chrome-extension/
+
+# file for aws lambda
+api/
