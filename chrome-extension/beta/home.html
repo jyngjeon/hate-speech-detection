@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+    <title>beta building</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <div class="logo">Medium</div>
+    <br>
+
+    <div class="slidetitle">
+        <div class="slidename">혐오표현 차단 정도 설정</div>
+        <div class="guideline">차단 기준 가이드라인</div>
+    </div>   
+    <div class="slidecontainer">
+        <input type="range" min="0" max="2" value="1" class="slider" id="mainSlider">
+    </div>
+    <div class="slidelabel">
+        <div>0</div>
+        <div>1</div>
+        <div>2</div>
+    </div>
+    <div>슬라이더 값: <span id="output"></span></div>
+    <script src="slider.js"></script>
+    <br>
+
+    <div class="listtitle">차단된 문장 <span id="blocked"></span>개</div>
+    <div class="blockedlist" id="blockedlist">
+        <div id="sen1"></div>
+        <div id="sen2"></div>
+        <div id="sen3"></div>
+        <div id="sen4"></div>
+    </div>
+    <br>
+</body>
+<script src="test.js"></script>
+</html> 

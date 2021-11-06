@@ -1,0 +1,66 @@
+body {
+  width: 300px;
+  height: 500px;
+  padding: 1em;
+  background-color: #fffefc;
+  display: flex;
+  flex-direction: column;
+}
+.slidetitle{
+  margin: 1em;
+  margin-bottom: 0;
+  width: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.slidecontainer {
+  margin-top: 1em;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  
+}
+
+.slider {
+  -webkit-appearance: none; /* Override default CSS styles */
+  appearance: none;
+  width: 95%;
+  height: 15px;
+  border-radius: 10px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (using webkit for chrome) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; 
+  height: 25px;
+  border-radius: 50%;
+  background: #ffa600; 
+  cursor: pointer;
+}
+
+.slidelabel {
+    margin: 1em;
+    margin-top: 0.5em;
+    width: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.blockedlist {
+  display: flex;
+  flex-direction: column;
+  justify-content: around;
+}
