@@ -1,0 +1,47 @@
+
+. {
+    margin: 0;
+    padding: 0;
+}
+
+.logo {
+    height: 70px;
+    width: auto;
+    
+}
+
+.topnav {
+  background-color: #ffae00;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navgroup {
+  width: 40%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.topnav a {
+    float: right;
+    color: #181818;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-family: 'Noto Sans KR';
+    font-weight: 500;
+    font-size: 17px;
+  }
+
+.topnav a:hover {
+  color: rgb(255, 255, 255);
+  background-color: #383838;
+}
+
+.topnav a.active {
+    background-color: #383838;
+    color: white;
+}

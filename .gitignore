@@ -135,7 +135,7 @@ dmypy.json
 datasets/
 dictionary-data/
 
-# 연습
+# 연습 
 word-embedding/history/keras_word_embedding_practice.py
 
 # 모델 (용량 문제)
