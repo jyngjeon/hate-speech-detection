@@ -1,13 +1,32 @@
 {
-    "name": "Getting Started Example",
-    "description": "Build an Extension!",
-    "version": "1.0",
-    "manifest_version": 3,
-    "action": {
-      "default_popup": "home.html"
-    },
-    "background": {
-      "service_worker": "background.js"
-    },
-    "permissions": ["scripting", "activeTab"]
+  "name": "Medium",
+  "description": "Medium blocks Korean hate speech texts anywhere online.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "home.html",
+    "default_icon": {
+      "16": "/assets/tinylogo/16.png",
+      "32": "/assets/tinylogo/32.png",
+      "48": "/assets/tinylogo/48.png",
+      "128": "/assets/tinylogo/128.png"
+    }
+  },
+  "icons": {
+    "16": "/assets/tinylogo/16.png",
+    "32": "/assets/tinylogo/32.png",
+    "48": "/assets/tinylogo/48.png",
+    "128": "/assets/tinylogo/128.png"
+  },
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*"],
+      "js": ["js/content.js"]
+    }
+  ],
+  "options_page": "html/option.html",
+  "permissions": ["scripting", "activeTab"]
 }
