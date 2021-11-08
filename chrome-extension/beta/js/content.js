@@ -1,9 +1,9 @@
-import url from "../info"
-
 const LABEL_HATE = "hate"
 const LABEL_OFFENSIVE = "offensive"
 const LABEL_NONE = "none"
 const BATCH_SIZE = 16
+
+const url = "https://gkkhnyeypg.execute-api.ap-northeast-2.amazonaws.com/rocketll/hate-speech"
 
 function isParagraph(node) {
     if (!node.hasChildNodes()) return false
@@ -32,6 +32,24 @@ class HateBlocker {
         
         for (let i = 0; i < allPossibleNodes.length; i++) {
             if (isParagraph(allPossibleNodes[i])) {
+                textNodes.push(allPossibleNodes[i])
+                texts.push(allPossibleNodes[i].innerText.trim())
+            }
+        }
+
+        this.nodes = textNodes
+        this.text = texts
+        this.level = level
+        this.querySelectorString = querySelectorString
+    }
+
+    getAddedContents(originalContents, level) {
+        const allPossibleNodes = document.querySelectorAll(this.querySelectorString)
+        var textNodes = new Array()
+        var texts = new Array()
+        
+        for (let i = 0; i < allPossibleNodes.length; i++) {
+            if (isParagraph(allPossibleNodes[i]) && !originalContents.includes(allPossibleNodes[i])) {
                 textNodes.push(allPossibleNodes[i])
                 texts.push(allPossibleNodes[i].innerText.trim())
             }
@@ -71,9 +89,11 @@ class HateBlocker {
         return JSON.stringify(jsonObj)
     }
 
-    async apiResponse() {
+    async apiResponse(originalContents) {
+        if (this.nodes.length == 0) return
+        var batchIndex = 0
         for (const batch of this.batch) {
-            console.log(batch.length)
+            console.log("BATCH: " + batchIndex)
             const response = await fetch(url, {
                 method: "POST",
                 mode: "cors",
@@ -84,34 +104,40 @@ class HateBlocker {
             })
             await response.json().then(
                 (res) => {
-                    console.log("BATCH - BLOCKED")
-                    this.blockHate(res)
+                    this.blockHate(res, batchIndex)
                 }
             )
+            batchIndex += 1
         }
+        console.log("END OF BATCH LOOP")
+
+        console.log("START NEW LOOP")
+        var updatedContents = originalContents.concat(this.nodes.slice(0, this.nodes.length))
+        this.getAddedContents(updatedContents, this.level)
+        this.generateBatch()
+        this.apiResponse(updatedContents)
     }
 
-    blockHate(response) {
-        const blockIndex = new Array()
+    blockHate(response, batchIndex) {
+        const blockIndexes = new Array()
 
         for (let i = 0; i < response.length; i++) {
             if (this.level == 1) {
-                if (response[i].label == LABEL_HATE) blockIndex.push(i)
+                if (response[i].label == LABEL_HATE) blockIndexes.push(i)
             } else if (this.level == 2) {
-                if (response[i].label != LABEL_NONE) blockIndex.push(i)
+                if (response[i].label != LABEL_NONE) blockIndexes.push(i)
             }
         }
         
-        while (blockIndex.length > 0) {
-            this.nodes[blockIndex[0]].style.color = "transparent"
-            blockIndex.shift()
+        for (const blockIndex of blockIndexes) {
+            this.nodes[batchIndex * BATCH_SIZE + blockIndex].style.color = "transparent"
+            console.log(this.nodes[batchIndex * BATCH_SIZE + blockIndex])
         }
     }
 }
 
 console.log("된다고 된다니까!")
-console.log(document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td, div, caption, span, a'))
-const blocker = new HateBlocker('h1, h2, h3, h4, h5, p, li, td, div, caption, span, a', 1)
-// blocker.parseText()
+const originalContents = []
+const blocker = new HateBlocker('h1, h2, h3, h4, h5, p, li, td, div, caption, span, a, strong, article', 2)
 blocker.generateBatch()
-blocker.apiResponse()
+blocker.apiResponse(originalContents)

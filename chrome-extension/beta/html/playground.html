@@ -1,13 +1,31 @@
+<!DOCTYPE html>
 <head>
-    <title>playground</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/playground.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8">
+  <title>Medium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/option.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
 </head>
 
 <body>
-    <input type="text" class="inputbox">
+  <!-- top navigation bar -->
+  <div class="topnav">
+    <img class="logo" src="../assets/biglogo/white.png" />
+    <div class="navgroup">
+      <a href="about.html">About</a>
+      <a href="option.html">Instruction</a>
+      <a class="active" href="playground.html">Playground</a>
+      <a href="https://github.com/bigbr4in0614/hate-speech-detection" target="_blank">Github</a>
+    </div>
+  </div>
+  <div class="contentbox">
+    <div class="boxcontainer">
+      <textarea class="inputbox" id="input"></textarea>
+      <button class="submitbutton" id="submit" onclick="submit()">submit</button>
+      <textarea class="outputbox" id="output" readonly></textarea>
+    </div>
+  </div>
+  <script src="../js/playground.js"></script>
 </body>

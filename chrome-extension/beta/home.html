@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <title>beta building</title>
+    <title>Medium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
     <div class="slidebox">
         <div class="slidetitle">
             <div class="slidename">차단 정도 설정</div>
-            <div class="guideline">차단 기준 가이드라인</div>
+            <div class="guideline" href="html/option.html" target="_blank"> 차단 기준 가이드라인</div>
         </div>   
         <div class="slidecontainer">
             <input type="range" min="0" max="2" value="1" class="slider" id="mainSlider">
@@ -29,11 +29,24 @@
         <script src="js/slider.js"></script>
     </div>
     <div class="listbox">
-        <div class="listtitle">차단된 문장 <span id="blocked">10</span>개</div>
-        <div class="blockedlist" id="blockedlist">
-
-        </div>
-        <br>
+        <div class="listtitle">차단된 문장 <span id="blocked">0</span>개</div>
+        <!-- <div class="blockedlist" id="blockedlist">
+            <div class="blockeditem">
+                <span class="sentence"> 더럽게 못생겼네 </span>
+                <span class="type hate"> 혐오 </span>
+                <span class="percentage">99%</span>
+            </div>
+            <div class="blockeditem">
+                <span class="sentence"> 코로나뿌린 장본인들이 코로나 복권에 당첨됐네 </span>
+                <span class="type off"> 공격 </span>
+                <span class="percentage"> 96% </span>
+            </div>
+            <div class="blockeditem">
+                <span class="sentence"> 호주의 반중감정이 극에달했고 한창 무역분쟁중인데 하필 복권 당첨자가 중국인 ㅋㅋㅋㅋㅋ 반중감정에 한스푼 더하겠네 ㅋㅋ </span>
+                <span class="type off"> 공격 </span>
+                <span class="percentage"> 57% </span>
+            </div>
+        </div> -->
     </div>
 </body>
 <script src="js/test.js"></script>

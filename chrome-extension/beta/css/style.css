@@ -1,7 +1,7 @@
 body {
   width: 300px;
   height: 500px;
-  background-color: #fdf9ec;
+  background-color: rgb(255, 246, 226);
   margin: 1em;
   display: flex;
   flex-direction: column;
@@ -82,13 +82,39 @@ body {
 }
 
 .listbox {
+  height: 200px;
   background-color: #fffdfa;
   border-radius: 5px;
   padding: 1em;
   margin-top: 1em;
 }
+
 .blockedlist {
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: around;
+  justify-content: space-around;
+}
+
+.blockeditem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+
+.sentence {
+  width: 60%;
+  padding-right: 5%;
+}
+
+.type {
+  width: 2em;
+}
+
+.hate {
+  color: red;
+}
+
+.off {
+  color: #ffa600;
 }
